@@ -1,0 +1,217 @@
+﻿@using DancingGoat.Controllers.Widgets
+@using DancingGoat.Helpers.Extensions
+
+@model DancingGoat.Models.Home.IndexViewModel
+
+@section styles
+{
+    @Html.Kentico().PageBuilderStyles()
+}
+
+@section scripts
+{
+    @Html.Kentico().PageBuilderScripts()
+}
+
+@helper MoreButton(string text, string url)
+{
+    if (!String.IsNullOrEmpty(url) && (!String.IsNullOrEmpty(text)))
+    {
+        <div class="row">
+            <div class="clear center-text">
+                <a href="@url" class="btn btn-more">
+                    @text
+                </a>
+            </div>
+        </div>
+    }
+}
+
+<html>
+<head>
+
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="~/jqueryflexslider.js"></script>
+    <script src="~/jquery.flexslider-min.js"></script>
+    <link href="~/flexslider-rtl-min.css" rel="stylesheet" />
+    <link href="~/flexslider.css" rel="stylesheet" />
+    <link href="~/flexslider.min.css" rel="stylesheet" />
+    <link href="~/flexslider.min.css.map" rel="stylesheet" />
+
+    <link href="~/flexslider-rtl.css" rel="stylesheet" />
+    <link href="~/Content/css/styles.css" rel="stylesheet" />
+    @*<link href="~/flexslider-icon.ttf" rel="stylesheet" />
+    <link href="~/flexslider-icon.woff" rel="stylesheet" />*@
+    
+</head>
+<body>
+
+
+    <div class="flexslider">
+        <ul class="slides">
+            @foreach (var bannerItem in Model.SliderBannerItem)
+            {
+                <li @*style="background-image: url(@Url.KenticoImageUrl(@bannerItem.BanImage))" data-thumb="slide1-thumb.jpg"*@>
+                    <div><img src="@bannerItem.BanImage" /></div>
+                    <div class="info">
+                        @*<img src="@bannerItem.BanImage" />*@
+                        <h1 class="head1">@bannerItem.Head1</h1>
+                        <h2 class="head2">@bannerItem.Head2</h2>
+                        <h3 class="head3">@bannerItem.Head3</h3>
+                        <h4 class="category"><span>@bannerItem.Category</span></h4>
+
+                    </div>
+
+                </li>
+            }
+        </ul>
+
+    </div>
+    <ul class="flex-direction-nav">
+    <li class="flex-nav-prev">
+        <a class="flex-prev flex-disabled" href="#" tabindex="-1">Previous</a>
+        </li>
+    <li class="flex-nav-next"><a class="flex-next" href="#">Next</a>
+        </li>
+    </ul>
+    @*<div class="navigation">
+        <a href="#" class="flex-prev">Prev</a>
+        <div class="custom-controls-container"></div>
+        <a href="#" class="flex-next">Next</a>
+    </div>*@
+
+    @Html.Kentico().EditableArea("area1", new EditableAreaOptions { AllowedWidgets = AreaRestrictionHelper.GetHomePageRestrictions() })
+
+    @foreach (var homeSection in Model.HomeSections)
+    {
+        <div class="row">
+            <h1 class="title-tab">@homeSection.Heading</h1>
+            <div class="col-sm-12">
+                <div class="ourstory-section center-text" style="background-image: url('@Url.Content(homeSection.BackgroundImagePath)');">
+                    @Html.Raw(homeSection.Text)
+                </div>
+            </div>
+        </div>
+
+        @MoreButton(homeSection.MoreButtonText, homeSection.MoreButtonUrl)
+    }
+
+    @Html.Kentico().EditableArea(
+        "area2",
+        new EditableAreaOptions
+        {
+            DefaultSectionIdentifier = ComponentIdentifiers.TWO_COLUMN_SECTION,
+            AllowedSections = AllowedComponents.NONE,
+            AllowedWidgets = new[] { SystemComponentIdentifiers.RICH_TEXT_WIDGET_IDENTIFIER }
+        }
+    )
+
+    @if (Model.Reference != null)
+    {
+        Html.RenderPartial("_Reference", Model.Reference);
+    }
+
+    <div class="row cafe-cards">
+        @Html.Kentico().EditableArea(
+            "area3",
+            new EditableAreaOptions
+            {
+                DefaultSectionIdentifier = ComponentIdentifiers.THREE_COLUMN_SECTION,
+                AllowedSections = new[] { ComponentIdentifiers.SINGLE_COLUMN_SECTION, ComponentIdentifiers.THREE_COLUMN_SECTION },
+                AllowedWidgets = new[] { CafeCardWidgetController.IDENTIFIER, ComponentIdentifiers.CTA_BUTTON_WIDGET }
+            }
+        )
+    </div>
+
+    @*//Can also be used with $(document).ready()*@
+    <script type="text/javascript">
+        //jQuery(window).load(function ($) {
+        //$(window).on('load', function () {
+        $('.flexslider').flexslider({
+            animation: "slide",
+            /*rtl: true*/
+            animationLoop: false,
+            itemWidth: 210,
+            itemMargin: 5
+            //controlNav: "thumbnails",
+            //controlsContainer: $(".custom-controls-container"),
+            //customDirectionNav: $(".custom-navigation a")
+        });
+
+        //console.log("running good");
+        //});
+        $(window).on('error', function () {
+            console.log("got error")
+        });
+
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+@*@if (Model.Banners != null && Model.Banners.Any())
+    {
+    foreach (var bannerItem in Model.Banners)
+    {
+    <div class="flexslider">
+        <ul class="slides">
+            <li style="background-image: url(@Url.KenticoImageUrl(@bannerItem.BanImage.GetPath()));">
+                <div>
+                    <h1 class="head-1">@bannerItem.Head1</h1>
+                    <h1 class="head-2">@bannerItem.Head2</h1>
+                    <h1 class="head-3">@bannerItem.Head3</h1>
+                    <h1 class="category"><span>@bannerItem.Category</span></h1>
+                </div>
+            </li>
+        </ul>
+    </div>
+    }
+    }
+
+    @Html.Kentico().EditableArea("area1", new EditableAreaOptions { AllowedWidgets = AreaRestrictionHelper.GetHomePageRestrictions() })
+
+    @foreach (var homeSection in Model.HomeSections)
+    {
+        <div class="row">
+            <h1 class="title-tab">@homeSection.Heading</h1>
+            <div class="col-sm-12">
+                <div class="ourstory-section center-text" style="background-image: url('@Url.Content(homeSection.BackgroundImagePath)');">
+                    @Html.Raw(homeSection.Text)
+                </div>
+            </div>
+        </div>
+
+        @MoreButton(homeSection.MoreButtonText, homeSection.MoreButtonUrl)
+    }
+
+    @Html.Kentico().EditableArea(
+        "area2",
+        new EditableAreaOptions
+        {
+            DefaultSectionIdentifier = ComponentIdentifiers.TWO_COLUMN_SECTION,
+            AllowedSections = AllowedComponents.NONE,
+            AllowedWidgets = new[] { SystemComponentIdentifiers.RICH_TEXT_WIDGET_IDENTIFIER }
+        }
+    )
+
+    @if (Model.Reference != null)
+    {
+        Html.RenderPartial("_Reference", Model.Reference);
+    }
+
+    <div class="row cafe-cards">
+        @Html.Kentico().EditableArea(
+            "area3",
+            new EditableAreaOptions
+            {
+                DefaultSectionIdentifier = ComponentIdentifiers.THREE_COLUMN_SECTION,
+                AllowedSections = new[] { ComponentIdentifiers.SINGLE_COLUMN_SECTION, ComponentIdentifiers.THREE_COLUMN_SECTION },
+                AllowedWidgets = new[] { CafeCardWidgetController.IDENTIFIER, ComponentIdentifiers.CTA_BUTTON_WIDGET }
+            }
+        )
+    </div>*@
